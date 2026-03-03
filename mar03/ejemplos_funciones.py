@@ -1,3 +1,6 @@
+IVA = 0.21
+RUTA_API = "https://api.ejemplo.com/v1/"
+
 def basica():
     print("Hola, soy una función básica")
 
@@ -38,11 +41,52 @@ def suma(a, b):
     return a + b
 
 def operaciones(a, b):
+    """Esta función devuelve las operaciones básicas sobre 2 números
+    la suma, la resta, la multiplicación y la división
+
+    Args:
+        a (float): el primer operando
+        b (float): el segundo operando, en las divisiones no puede ser 0
+
+    Returns:
+        tuple: Es una tupla con los resultados de las operaciones en el orden suma, resta, multiplicación y división
+    """
     suma = a + b
     resta = a - b
     multiplicacion = a * b
     division = a / b if b != 0 else "No se puede dividir por cero"
     return suma, resta, multiplicacion, division
+
+def operaciones2(a: float, b: float) -> tuple[float, float, float, float]:
+    """Esta función devuelve las operaciones básicas sobre 2 números
+    la suma, la resta, la multiplicación y la división
+
+    Args:
+        a (float): el primer operando
+        b (float): el segundo operando, en las divisiones no puede ser 0
+
+    Returns:
+        tuple(float,float,float,float): Es una tupla con los resultados de las operaciones en el orden suma, resta, multiplicación y división
+    """   
+    suma = a + b
+    print("El resultado de la suma es:", suma)
+    resta = a - b
+    multiplicacion = a * b
+    division = a / b if b != 0 else 0
+    return suma, resta, multiplicacion, division
+
+
+def calculo_precio_con_iva(precio):
+    """Calcula el precio con IVA incluido
+
+    Args:
+        precio (float): el precio sin IVA
+
+    Returns:
+        float: el precio con IVA incluido
+    """
+    return precio * (1 + IVA)
+
 
 basica()
 con_parametros("Fran")
@@ -73,3 +117,10 @@ print("Suma:", rsuma)
 print("Resta:", resta)
 print("Multiplicación:", multiplicacion)
 print("División:", division)
+resultados_operaciones2 = operaciones2(10, 5)
+print("Resultados de las operaciones con anotaciones de tipo:")
+print("Suma:", resultados_operaciones2[0])
+print("Resta:", resultados_operaciones2[1])
+print("Multiplicación:", resultados_operaciones2[2])
+print("División:", resultados_operaciones2[3])
+print("Precio con IVA incluido:", calculo_precio_con_iva(100))
