@@ -97,11 +97,7 @@ class MySorted:
         
         return lst
     
-    def timsort_explained(self, lst):
-        
-        
-    
-    
+      
 if __name__ == "__main__":
     print(MySorted().bubble_sort(list("hola")))
     print(MySorted().selection_sort([64, 34, 25, 12, 22, 11, 90]))
