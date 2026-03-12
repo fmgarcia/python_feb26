@@ -61,12 +61,44 @@ def obtener_equipos_competicion(headers, id_competicion):
 def almacenar_equipos_db(equipos):
     try:
         conexion = mysql.connector.connect(**CONFIGURATION_DB) # Establece la conexión a la base de datos utilizando los parámetros definidos en CONFIGURATION_DB a través de mysql.connector.connect(). Si la conexión es exitosa, se imprime un mensaje indicando que la conexión a la base de datos se ha establecido correctamente. ** CONFIGURATION_DB es una forma de pasar los parámetros de configuración como argumentos de palabra clave a la función connect().
-        print("Conexión a la base de datos establecida.")
+        if conexion.is_connected():
+            cursor = conexion.cursor() # Crea un cursor para ejecutar consultas SQL. El cursor es un objeto que permite interactuar con la base de datos y ejecutar comandos SQL.
+            crear_tabla_query = """
+            CREATE TABLE IF NOT EXISTS equipos (
+                id_equipo INT PRIMARY KEY,
+                nombre VARCHAR(100),
+                nombre_corto VARCHAR(50),
+                tla VARCHAR(3),
+                fundacion INT,
+                estadio VARCHAR(100)
+            )
+            """
+            cursor.execute(crear_tabla_query) # Ejecuta la consulta SQL para crear la tabla "equipos" si no existe. La tabla tiene columnas que corresponden a los atributos de la clase Equipo, con tipos de datos adecuados para cada uno.
+
+            guardados = 0
+            for equipo in equipos:
+                # Compruebo si el equipo ya existe en la base de datos para evitar duplicados. Esto se hace ejecutando una consulta SQL SELECT para verificar si ya existe un registro con el mismo id_equipo. Si no existe, se inserta el nuevo equipo en la base de datos utilizando una consulta SQL INSERT.
+                cursor.execute(
+                    "SELECT id_equipo FROM equipos WHERE id_equipo = %s",
+                    (equipo.id_equipo,)
+                )
+                if not cursor.fetchone(): # Si no se encuentra el equipo, lo insertamos
+                    guardados += 1
+                    cursor.execute(
+                        "INSERT INTO equipos (id_equipo, nombre, nombre_corto, tla, fundacion, estadio) VALUES (%s, %s, %s, %s, %s, %s)",
+                        (equipo.id_equipo, equipo.nombre, equipo.nombre_corto, equipo.tla, equipo.fundacion, equipo.estadio)
+                    )
+            conexion.commit() # Confirma los cambios realizados en la base de datos. Esto es necesario para que las inserciones de datos se guarden de manera permanente en la base de datos. Si no se llama a commit(), los cambios no se guardarán y se perderán al cerrar la conexión.
+            print(f"Datos almacenados en la base de datos correctamente. Se han guardado {guardados} equipos.")
         
     except Error as e:
-        print(f"Error al conectar a la base de datos: {e}")
+        print(f"Error de base de datos: {e}")
+        conexion.rollback() # Si ocurre un error durante la conexión o la ejecución de las consultas SQL, se llama a rollback() para deshacer cualquier cambio realizado en la base de datos durante la transacción actual. Esto asegura que la base de datos no quede en un estado inconsistente debido a errores.
     finally:
-        pass
+        # Asegurarnos de cerrar la conexión a la base de datos para liberar recursos, incluso si ocurre un error durante el proceso.
+        if conexion.is_connected():
+            cursor.close() # Cierra el cursor para liberar recursos asociados con él.
+            conexion.close() # Cierra la conexión a la base de datos para liberar recursos asociados con la conexión.
 
 
 if __name__ == "__main__":
@@ -74,9 +106,9 @@ if __name__ == "__main__":
     "X-Auth-Token": API_KEY # Reemplaza con tu token de autenticación de la API de fútbol
     }  
     try:
-        equipos = obtener_equipos_competicion(headers, id_competicion=2001)
-        almacenar_equipos_db(equipos)
-
-
+        competiciones = [2014,2017,2003]
+        for id_competicion in competiciones:
+            equipos = obtener_equipos_competicion(headers, id_competicion=id_competicion)
+            almacenar_equipos_db(equipos)
     except Exception as e:
         print(f"Error al obtener los datos de la API: {e}")  
