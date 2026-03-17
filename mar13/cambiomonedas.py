@@ -12,9 +12,7 @@ def devolucion_minima_monedas(lista_monedas : list[int], cantidad_devolver : int
     Returns:
         list[int]: Lista de monedas necesarias para devolver la cantidad solicitada.
     """    
-    # Ordenamos la lista de monedas de mayor a menor para intentar devolver la cantidad con el menor número de monedas posible.
-    lista_monedas.sort(reverse=True)
-    
+   
     # Inicializamos una lista vacía para almacenar las monedas que se devolverán y una variable para llevar un seguimiento de la cantidad restante por devolver.
     monedas_devolver = []
     i = 0
@@ -34,7 +32,7 @@ def devolucion_minima_monedas(lista_monedas : list[int], cantidad_devolver : int
     return monedas_devolver
 
 if __name__ == "__main__":
-    lista_monedas = [10, 50, 100, 500]
+    lista_monedas = [500, 100, 50, 10]
     cantidad_devolver = 870
     try:
         resultado = devolucion_minima_monedas(lista_monedas, cantidad_devolver)

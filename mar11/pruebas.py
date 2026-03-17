@@ -1,5 +1,6 @@
 from mysorted import MySorted
 
+
 def es_anagrama_selection_sort(str1, str2):  
     return MySorted().selection_sort(list(str1)) == MySorted().selection_sort(list(str2))
 
